@@ -1,6 +1,6 @@
 // ================================================================
 //      Penser a selectionner :
-//      Outils → Partition Scheme → Huge APP (3MB No OTA)
+//      Outils → Partition Scheme → Huge APP (3MB No OTA) 
 // ================================================================
 
 #include <BLEDevice.h>
@@ -38,6 +38,10 @@ const char* NOMS_HUM[4] = {
   "ESP32_Hum_Z3",
   "ESP32_Hum_Z4"
 };
+
+const int motorPin3 = 9;
+const int motorPin4 = 10;
+int ouvrir = LOW; 
 
 // ── Donnees recues ───────────────────────────────────────────────
 float humidites[4] = {-1, -1, -1, -1};
@@ -105,8 +109,11 @@ void setup() {
     pinMode(RELAIS_VANNE[i], OUTPUT);
     digitalWrite(RELAIS_VANNE[i], LOW);
   }
-  pinMode(RELAIS_TRAPPE, OUTPUT);
-  digitalWrite(RELAIS_TRAPPE, LOW);
+  pinMode(RELAIS_TRAPPE1, OUTPUT);
+  digitalWrite(RELAIS_TRAPPE1, LOW);
+  pinMode(RELAIS_TRAPPE2, OUTPUT);
+  digitalWrite(RELAIS_TRAPPE2, LOW);
+
 
   // Bluetooth
   BLEDevice::init("ESP32_Central");
