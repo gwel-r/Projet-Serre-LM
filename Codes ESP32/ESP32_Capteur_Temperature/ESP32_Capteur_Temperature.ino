@@ -62,5 +62,7 @@ void loop() {
   String msg = "T:" + String(tempC, 1);
   pCarac->setValue(msg.c_str());
   Serial.println("Temperature mise a jour : " + msg);
-  delay(5000);
+  esp_sleep_enable_timer_wakeup(20000000); // config timer for wake up after 20 sec  
+  int ret = esp_light_sleep_start(); // start timer and put ESP32 to sleep
+  Serial.println("ESP awoken");
 }
