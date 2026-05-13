@@ -1,10 +1,5 @@
 // ================================================================
-//  ESP32 Central - Client BLE
-//  Lit 4 capteurs humidite + 1 capteur temperature
-//  Pilote 4 relais vannes + 1 relais trappe
-//  Envoie les donnees au Raspberry Pi via HTTP
-//
-//  ⚠️  Penser a selectionner :
+//      Penser a selectionner :
 //      Outils → Partition Scheme → Huge APP (3MB No OTA)
 // ================================================================
 
@@ -13,11 +8,13 @@
 #include <BLEScan.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <DallasTemperature.h>
 
 // ── WiFi ─────────────────────────────────────────────────────────
 const char* SSID         = "TP_INDUS";
 const char* PASSWORD     = "3rFui78x";
 const char* RASPBERRY_IP = "10.6.10.56";
+const char* SERVEUR_IP = "10.100.254.42"; 
 
 // ── Seuils de declenchement ──────────────────────────────────────
 const float SEUIL_HUM  = 30.0;  // Ouvre vanne si humidite < 30%    a changer si la valeur est top basse ou trop haute
@@ -25,7 +22,8 @@ const float SEUIL_TEMP = 25.0;  // Ouvre trappe si temperature > 25 degres
 
 // ── Broches relais ───────────────────────────────────────────────
 const int RELAIS_VANNE[4] = {26, 27, 14, 12};
-const int RELAIS_TRAPPE   = 13;
+const int RELAIS_TRAPPE1   = 13;
+const int RELAIS_TRAPPE2   = 11;
 
 // ── UUIDs BLE ────────────────────────────────────────────────────
 #define SERVICE_HUM  "11111111-1111-1111-1111-111111111111"
@@ -95,58 +93,12 @@ String lireBluetooth(const char* nom, const char* serviceUUID, const char* charU
   return valeur;
 }
 
-// ── Application des regles ───────────────────────────────────────
-void appliquerRegles() {
-  // Vannes humidite
-  for (int i = 0; i < 4; i++) {
-    if (humidites[i] < 0) {
-      Serial.println("Zone " + String(i+1) + " : pas de donnee, vanne inchangee");
-      continue;
-    }
-    bool ouvrir = (humidites[i] < SEUIL_HUM);
-    digitalWrite(RELAIS_VANNE[i], ouvrir ? HIGH : LOW);
-    Serial.println("Zone " + String(i+1) + " : " + String(humidites[i]) + "% → vanne " + (ouvrir ? "OUVERTE" : "FERMEE"));
-  }
-
-  // Trappe temperature
-  if (temperature < 0) {
-    Serial.println("Temperature : pas de donnee, trappe inchangee");
-    return;
-  }
-  bool ouvrir = (temperature > SEUIL_TEMP);
-  digitalWrite(RELAIS_TRAPPE, ouvrir ? HIGH : LOW);
-  Serial.println("Temperature : " + String(temperature) + "°C → trappe " + (ouvrir ? "OUVERTE" : "FERMEE"));
-}
-
-// ── Envoi HTTP ───────────────────────────────────────────────────
-void envoyerHTTP(String url) {
-  HTTPClient http;
-  http.begin(url);
-  int code = http.GET();
-  http.end();
-  Serial.println("HTTP " + String(code) + " → " + url);
-}
-
-void envoyerRaspberry() {
-  if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("WiFi deconnecte - envoi impossible");
-    return;
-  }
-
-  if (temperature >= 0)
-    envoyerHTTP("http://" + String(RASPBERRY_IP) + "/temperature.php?valeur=" + String(temperature, 1));
-
-  for (int i = 0; i < 4; i++) {
-    if (humidites[i] < 0) continue;
-    envoyerHTTP("http://" + String(RASPBERRY_IP)
-      + "/humidite.php?capteur=" + String(i+1)
-      + "&valeur=" + String(humidites[i], 1));
-  }
-}
-
 // ── Setup ────────────────────────────────────────────────────────
 void setup() {
   Serial.begin(115200);
+  // Verin
+  pinMode(motorPin3, OUTPUT);
+  pinMode(motorPin4, OUTPUT);
 
   // Relais - tout ferme au demarrage
   for (int i = 0; i < 4; i++) {
@@ -188,7 +140,8 @@ void loop() {
   appliquerRegles();
 
   // 4. Envoi des donnees au Raspberry Pi
-  envoyerRaspberry();
+  //envoyerRaspberry();     //plus utile car on a le serveur
+  envoyerserveur();
 
   Serial.println("=== Fin cycle - pause 6s ===");
   delay(6000);
