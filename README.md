@@ -6,17 +6,17 @@ Projet terminal STI2D SIN — Lycée La Mennais
 
 ## Présentation
 
-**Projet Serre LM** est un système de serre agricole entièrement autonome, développé dans le cadre du projet terminal de terminale STI2D spécialité SIN. L'objectif est de gérer automatiquement l'irrigation, la ventilation et la surveillance environnementale d'une serre, en s'appuyant sur un réseau de microcontrôleurs ESP32 communiquant par Bluetooth avec une centrale Raspberry Pi. Toutes les données collectées sont accessibles en temps réel via un site web dédié.
+**Projet Serre LM** est un système de serre entièrement autonome, développé dans le cadre de notre projet de terminal STI2D spécialité SIN. L'objectif est de gérer automatiquement l'irrigation et la ventilation, en s'appuyant sur un réseau de microcontrôleurs ESP32 communiquant par Bluetooth entre eux et par wifi avec un serveur. Toutes les données collectées sont accessibles en temps réel via un site web dédié.
 
 ---
 
 ## Auteurs
 
-| Nom | Rôle |
-|---|---|
-| Gweltaz | Développement matériel & logiciel |
-| Hugo | Développement matériel & logiciel |
-| Nathan | Développement matériel & logiciel |
+| Nom |
+|---|
+| Gweltaz |
+| Hugo | 
+| Nathan |
 
 ---
 
@@ -28,7 +28,7 @@ Projet terminal STI2D SIN — Lycée La Mennais
 - Déclenchement automatique des électrovannes d'irrigation par zone selon l'humidité mesurée
 - Surveillance du niveau d'eau de la réserve avec activation de la pompe conditionnée au niveau disponible
 - Alimentation autonome de chaque module via panneaux solaires (18,2 V) et régulateurs de charge
-- Centralisation des données sur un serveur Raspberry Pi 3B+
+- Centralisation des données sur un serveur Raspberry Pi 3B+ et sur un serveur
 - Visualisation des données en temps réel via un site web (PHP / SQL)
 
 ---
@@ -68,8 +68,8 @@ Le diagramme de bloc interne complet est disponible à la racine du dépôt (`di
 | Couche | Technologies |
 |---|---|
 | Microcontrôleurs | ESP32, C++ (Arduino framework) |
-| Centrale | Raspberry Pi 3B+ |
-| Communication | Bluetooth (ESP32 ↔ RPi) |
+| Centrale | Raspberry Pi 3B+ & serveur |
+| Communication | Bluetooth (ESP32 ↔ RPi) & Wi-Fi |
 | Serveur web | PHP, SQL |
 | Interface utilisateur | HTML, CSS |
 
@@ -84,14 +84,15 @@ Projet-Serre-LM/
 │   └── ...
 ├── esp32_temperature/            # Code ESP32 — module température / ventilation
 │   └── esp32_temperature.ino
-├── esp32_humidite_zone1/         # Code ESP32 — module humidité zone 1
-│   └── esp32_humidite_zone1.ino
-├── esp32_humidite_zone2/         # Code ESP32 — module humidité zone 2
-│   └── esp32_humidite_zone2.ino
-├── esp32_humidite_zone3/         # Code ESP32 — module humidité zone 3
-│   └── esp32_humidite_zone3.ino
-├── esp32_humidite_zone4/         # Code ESP32 — module humidité zone 4
-│   └── esp32_humidite_zone4.ino
+├── esp32_capteur_humidite/        
+│   └── esp32_capteur_humidite_z1/ # Code ESP32 — module humidité zone 1
+│       └── esp32_capteur_humidite_z1.ino
+│   └── esp32_capteur_humidite_z2/ # Code ESP32 — module humidité zone 2
+│       └── esp32_capteur_humidite_z2.ino
+│   └── esp32_capteur_humidite_z3/ # Code ESP32 — module humidité zone 3
+│       └── esp32_capteur_humidite_z3.ino
+│   └── esp32_capteur_humidite_z4/ # Code ESP32 — module humidité zone 4
+│       └── esp32_capteur_humidite_z4.ino
 ├── esp32_pompe/                  # Code ESP32 — module pompe / réserve d'eau
 │   └── esp32_pompe.ino
 ├── diagramme_bloc_interne.pdf    # Schéma d'architecture du système
