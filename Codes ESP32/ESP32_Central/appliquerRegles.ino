@@ -1,25 +1,29 @@
-void appliquerRegles(void) {
-  // Vannes humidite
+// ── Application des regles ───────────────────────────────────────
+void appliquerRegles() {
+  // Gestion des 4 vannes d'humidite
   for (int i = 0; i < 4; i++) {
-    if (humidites[i] < 0) {
-      Serial.println("Zone " + String(i+1) + " : pas de donnee, vanne inchangee");
-      continue;
+    if (humidites[i] >= 0) {
+      if (humidites[i] < SEUIL_HUM) {
+        digitalWrite(RELAIS_VANNE[i], HIGH);
+        Serial.println("Vanne " + String(i + 1) + " ouverte (humidite : " + String(humidites[i]) + "%)");
+        // NOUVEAU : si au moins une zone est seche, on demande le pompage
+        demanderPompage = true;
+      } else {
+        digitalWrite(RELAIS_VANNE[i], LOW);
+        Serial.println("Vanne " + String(i + 1) + " fermee (humidite : " + String(humidites[i]) + "%)");
+      }
     }
-    bool ouvrir = (humidites[i] < SEUIL_HUM);
-    digitalWrite(RELAIS_VANNE[i], ouvrir ? HIGH : LOW);
-    Serial.println("Zone " + String(i+1) + " : " + String(humidites[i]) + "% → vanne " + (ouvrir ? "OUVERTE" : "FERMEE"));
   }
-
-  // Trappe temperature
-  if (temperature < 0) {
-    Serial.println("Temperature : pas de donnee, trappe inchangee");
-    return;
+  // Gestion de la trappe temperature
+  if (temperature >= 0) {
+    if (temperature > SEUIL_TEMP) {
+      digitalWrite(RELAIS_TRAPPE1, HIGH);
+      digitalWrite(RELAIS_TRAPPE2, HIGH);
+      Serial.println("Trappe ouverte (temperature : " + String(temperature) + "C)");
+    } else {
+      digitalWrite(RELAIS_TRAPPE1, LOW);
+      digitalWrite(RELAIS_TRAPPE2, LOW);
+      Serial.println("Trappe fermee (temperature : " + String(temperature) + "C)");
+    }
   }
-  if (temperature > SEUIL_TEMP){
-    ouvrirTrappe();
-  }
-  else {
-    fermerTrappe();
-  }
-  Serial.println("Temperature : " + String(temperature) + "°C → trappe " + (ouvrir ? "OUVERTE" : "FERMEE"));
 }
