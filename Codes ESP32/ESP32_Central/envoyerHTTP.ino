@@ -1,4 +1,4 @@
-void envoyerHTTP(void) {
+void envoyerHTTP(String url) {
   HTTPClient http;
   http.begin(url);
   int code = http.GET();
