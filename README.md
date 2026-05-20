@@ -79,22 +79,20 @@ Le diagramme de bloc interne complet est disponible à la racine du dépôt (`di
 
 ```
 Projet-Serre-LM/
-├── centrale/                     # Code principal de la Raspberry Pi
-│   ├── centrale.py               # Programme central et sous-programmes associés
-│   └── ...
-├── esp32_temperature/            # Code ESP32 — module température / ventilation
-│   └── esp32_temperature.ino
-├── esp32_capteur_humidite/        
-│   └── esp32_capteur_humidite_z1/ # Code ESP32 — module humidité zone 1
-│       └── esp32_capteur_humidite_z1.ino
-│   └── esp32_capteur_humidite_z2/ # Code ESP32 — module humidité zone 2
-│       └── esp32_capteur_humidite_z2.ino
-│   └── esp32_capteur_humidite_z3/ # Code ESP32 — module humidité zone 3
-│       └── esp32_capteur_humidite_z3.ino
-│   └── esp32_capteur_humidite_z4/ # Code ESP32 — module humidité zone 4
-│       └── esp32_capteur_humidite_z4.ino
-├── esp32_pompe/                  # Code ESP32 — module pompe / réserve d'eau
-│   └── esp32_pompe.ino
+├──Codes ESP32/
+│ └──esp32_temperature/            # Code ESP32 — module température / ventilation
+│       └── esp32_temperature.ino
+│    └── esp32_capteur_humidite/        
+│       └── esp32_capteur_humidite_z1/ # Code ESP32 — module humidité zone 1
+│           └── esp32_capteur_humidite_z1.ino
+│       └── esp32_capteur_humidite_z2/ # Code ESP32 — module humidité zone 2
+│           └── esp32_capteur_humidite_z2.ino
+│       └── esp32_capteur_humidite_z3/ # Code ESP32 — module humidité zone 3
+│           └── esp32_capteur_humidite_z3.ino
+│       └── esp32_capteur_humidite_z4/ # Code ESP32 — module humidité zone 4
+│           └── esp32_capteur_humidite_z4.ino
+│    └── esp32_pompe/                  # Code ESP32 — module pompe / réserve d'eau
+│       └── esp32_pompe.ino
 ├── diagramme_bloc_interne.pdf    # Schéma d'architecture du système
 └── README.md
 ```
