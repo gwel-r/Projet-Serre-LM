@@ -9,12 +9,14 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <DallasTemperature.h>
+#include <WiFiUDP.h>      // NOUVEAU : communication UDP avec l'ESP32 Pompe
 
 // ── WiFi ─────────────────────────────────────────────────────────
 const char* SSID         = "TP_INDUS";
 const char* PASSWORD     = "3rFui78x";
 const char* RASPBERRY_IP = "10.6.10.56";
 const char* SERVEUR_IP = "10.100.254.42"; 
+const char* POMPE_IP     = "10.6.10.68"; 
 
 // ── Seuils de declenchement ──────────────────────────────────────
 const float SEUIL_HUM  = 30.0;  // Ouvre vanne si humidite < 30%    a changer si la valeur est top basse ou trop haute
@@ -46,6 +48,17 @@ int ouvrir = LOW;
 // ── Donnees recues ───────────────────────────────────────────────
 float humidites[4] = {-1, -1, -1, -1};
 float temperature  = -1;
+
+// ── UDP Pompe ────────────────────────────────────────────────────
+WiFiUDP udpPompe;
+const int POMPE_PORT  = 1234;  // NOUVEAU : port d'ecoute de l'ESP32 Pompe
+const int LOCAL_PORT  = 1235;  // NOUVEAU : port d'ecoute du Central pour les reponses
+
+// NOUVEAU : stocke le dernier statut retourne par l'ESP32 Pompe (0 = fermee, 1 = ouverte)
+bool vanneDistanteOuverte = false;
+
+// NOUVEAU : indique si on doit demander le pompage ce cycle
+bool demanderPompage = false;
 
 // ── Lecture BLE ──────────────────────────────────────────────────
 String lireBluetooth(const char* nom, const char* serviceUUID, const char* charUUID) {
@@ -126,6 +139,11 @@ void setup() {
     Serial.print(".");
   }
   Serial.println("\nWiFi connecte - IP : " + WiFi.localIP().toString());
+  
+  /* NOUVEAU : demarrage de l'ecoute UDP sur le port 
+  local pour recevoir les reponses de l'ESP32 Pompe */           
+  udpPompe.begin(LOCAL_PORT);
+  Serial.println("Ecoute UDP pompe sur port " + String(LOCAL_PORT));
 }
 
 // ── Loop ─────────────────────────────────────────────────────────
@@ -143,11 +161,16 @@ void loop() {
   String msgTemp = lireBluetooth("ESP32_Temperature", SERVICE_TEMP, CHAR_TEMP);
   if (msgTemp.startsWith("T:")) temperature = msgTemp.substring(2).toFloat();
 
-  // 3. Application des regles → vannes et trappe
+  // 3. Application des regles → vannes, trappe, et calcul besoin pompage
   appliquerRegles();
 
-  // 4. Envoi des donnees au Raspberry Pi
-  //envoyerRaspberry();     //plus utile car on a le serveur
+  // 4. NOUVEAU : envoi du signal de pompage a l'ESP32 Pompe
+  envoyerSignalPompe();
+
+  // 5. NOUVEAU : lecture du statut retourne par l'ESP32 Pompe
+  recevoirStatutPompe();
+
+  // 6. Envoi des donnees au serveur (inclut desormais le statut de la vanne pompe)
   envoyerserveur();
 
   Serial.println("=== Fin cycle - pause 6s ===");
