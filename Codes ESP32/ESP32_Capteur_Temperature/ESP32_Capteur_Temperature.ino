@@ -9,7 +9,7 @@
 #define SERVICE_UUID "55555555-5555-5555-5555-555555555555"
 #define CHAR_UUID    "5555eeee-5555-5555-5555-5555eeeeeeee"
 #define NOM_CAPTEUR  "ESP32_Temperature"
-#define ONE_WIRE_BUS 4 
+#define ONE_WIRE_BUS 5 //passage de d4 a d5
 
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
