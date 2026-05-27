@@ -22,8 +22,8 @@ const int PIN_CAPTEUR = 34;//A changer en fonction d'où on branche le capteur
 
 BLECharacteristic* pCarac;
 
-int AirValue = 2559; //air sec
-int WaterValue = 848; //eau
+int AirValue = 2650; //air sec
+int WaterValue = 80; //eau
 
 class CallbackServeur : public BLEServerCallbacks {
   void onDisconnect(BLEServer* serveur) {
