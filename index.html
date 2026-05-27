@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<style>
+    /* ── Variables ── */
+    :root {
+        --bg-deep: #15351f;
+        /* couleur fond*/
+        --bg-mid: #0f2318;
+        /*jsp*/
+        --green-1: #1a4a2e;
+        /*rien*/
+        --green-2: #2d7a4f;
+        /*rien*/
+        --green-3: #4caf7d;
+        /*titre (Temperature et hummidité)*/
+        --green-glow: #6fcf97;
+        /*titre principal, temp(chiffre) et zone*/
+        --amber: #f0a500;
+        /*rien*/
+        --amber-soft: #ffd166;
+        /*rien*/
+        --text-main: #e8f5e9;
+        /*variable humidité*/
+        --text-muted: #7aab8a;
+        /*tableau de bord et d'autre choses*/
+        --card-bg: rgba(15, 40, 25, 0.75);
+        /*case*/
+        --card-border: rgba(77, 175, 125, 0.2);
+        /*bordure case*/
+        --open-bg: rgba(30, 100, 60, 0.45);
+        /*case sec*/
+        --open-border: rgba(111, 207, 151, 0.5);
+        /*bordure case sec*/
+        --closed-bg: rgba(10, 30, 18, 0.5);
+        /*case humide*/
+        --closed-border: rgba(45, 122, 79, 0.3);
+        /*bordure case humide*/
+        --color-text-primary: #e8f5e9;
+        /*gauge*/
+        --color-text-secondary: #e8f5e9;
+        /*gauge*/
+    }
+
+    /* ── Reset ── */
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* ── Body / fond ── */
+    body {
+        min-height: 100vh;
+        background: var(--bg-deep);
+        font-family: 'DM Sans', sans-serif;
+        color: var(--text-main);
+        overflow-x: hidden;
+        position: relative;
+    }
+
+    /* ── Orbes de lumière en arrière-plan ── */
+    .bg-orbs {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(90px);
+        opacity: 0.35;
+        animation: drift 12s ease-in-out infinite alternate;
+    }
+
+    .orb1 {
+        width: 520px;
+        height: 520px;
+        background: radial-gradient(circle, #1e7a45, transparent 70%);
+        top: -120px;
+        left: -100px;
+        animation-duration: 14s;
+    }
+
+    .orb2 {
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, #0d4a28, transparent 70%);
+        bottom: -80px;
+        right: -80px;
+        animation-duration: 10s;
+        animation-delay: -4s;
+    }
+
+    .orb3 {
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, #c87d00, transparent 70%);
+        top: 40%;
+        left: 55%;
+        opacity: 0.18;
+        animation-duration: 16s;
+        animation-delay: -7s;
+    }
+
+    @keyframes drift {
+        from {
+            transform: translate(0, 0) scale(1);
+        }
+
+        to {
+            transform: translate(30px, 20px) scale(1.08);
+        }
+    }
+
+    /* ── Feuilles décoratives ── */
+    .leaves {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .leaf {
+        position: absolute;
+        color: rgba(40, 110, 65, 0.18);
+        animation: sway 8s ease-in-out infinite alternate;
+    }
+
+    .leaf1 {
+        width: 90px;
+        top: 5%;
+        left: 2%;
+        transform: rotate(-20deg);
+        animation-duration: 9s;
+    }
+
+    .leaf2 {
+        width: 130px;
+        top: 12%;
+        right: 3%;
+        transform: rotate(30deg);
+        animation-duration: 11s;
+        animation-delay: -2s;
+    }
+
+    .leaf3 {
+        width: 70px;
+        bottom: 8%;
+        left: 4%;
+        transform: rotate(15deg);
+        animation-duration: 7s;
+        animation-delay: -5s;
+    }
+
+    .leaf4 {
+        width: 110px;
+        bottom: 5%;
+        right: 5%;
+        transform: rotate(-35deg);
+        animation-duration: 13s;
+        animation-delay: -3s;
+    }
+
+    @keyframes sway {
+        from {
+            transform: rotate(var(--r, -20deg)) translateY(0);
+        }
+
+        to {
+            transform: rotate(calc(var(--r, -20deg) + 10deg)) translateY(-12px);
+        }
+    }
+
+    /* ── Grille de structure (subtile) ── */
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(77, 175, 125, 0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(77, 175, 125, 0.04) 1px, transparent 1px);
+        background-size: 60px 60px;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    /* ── Conteneur principal ── */
+    .container {
+        position: relative;
+        z-index: 1;
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 48px 24px 64px;
+    }
+
+    /* ── Titre ── */
+    h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2rem, 5vw, 3rem);
+        color: var(--green-glow);
+        letter-spacing: -0.5px;
+        margin-bottom: 8px;
+        line-height: 1.1;
+        text-shadow: 0 0 40px rgba(111, 207, 151, 0.3);
+        animation: fadeDown 0.7s ease both;
+        text-align: center;
+    }
+
+    @keyframes fadeDown {
+        from {
+            opacity: 0;
+            transform: translateY(-16px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ── Cards ── */
+    .card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        padding: 32px 36px;
+        margin-top: 28px;
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(111, 207, 151, 0.08);
+        animation: fadeUp 0.6s ease both;
+        text-align: center;
+    }
+
+    .card-temp {
+        animation-delay: 0.15s;
+    }
+
+    .card-humidity {
+        animation-delay: 0.3s;
+    }
+
+    @keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .card-label {
+        font-size: 2rem;
+        font-style: bold;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--green-3);
+        margin-bottom: 16px;
+        font-weight: 500;
+    }
+
+    /* ── Température ── */
+    .valeur {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(3rem, 8vw, 5rem);
+        color: var(--green-glow);
+        line-height: 1;
+        text-shadow: 0 0 30px rgba(111, 207, 151, 0.4);
+    }
+
+    .valeur .unit {
+        font-size: 0.45em;
+        color: var(--text-muted);
+        margin-left: 4px;
+    }
+
+    .trappe-line {
+        margin-top: 14px;
+        color: var(--text-muted);
+        font-size: 1.3rem;
+    }
+
+    /* ── Badge trappe ── */
+    .badge {
+        display: inline-block;
+        padding: 3px 14px;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        background: rgba(77, 175, 125, 0.15);
+        border: 1px solid var(--card-border);
+        color: var(--green-glow);
+        transition: all 0.4s ease;
+    }
+
+    /* ── Zones ── */
+    .zones {
+        display: flex;
+        justify-content: center;
+        gap: 24px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
+
+    /* Écran moyen : 2 colonnes */
+    @media (max-width: 1000px) {
+        .zones {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    /* Petit écran : 1 colonne */
+    @media (max-width: 380px) {
+        .zones {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .capteur {
+        flex: 0 1 320px;
+        /* Plus large par défaut */
+        border-radius: 18px;
+        padding: 30px 24px;
+        border: 1px solid;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        text-align: center;
+    }
+
+    .capteur:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .capteur h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+        color: var(--green-glow);
+    }
+
+    .capteur p {
+        font-size: 1.1rem;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+    }
+
+    .capteur p span {
+        color: var(--text-main);
+        font-weight: 500;
+    }
+
+    /* ── États des zones ── */
+    .zone-ouverte {
+        background: var(--open-bg);
+        border-color: var(--open-border);
+        box-shadow: 0 0 20px rgba(111, 207, 151, 0.1);
+    }
+
+    .zone-fermee {
+        background: var(--closed-bg);
+        border-color: var(--closed-border);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/ag-charts-community/dist/ag-charts-community.min.js"></script>
+
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Serre Autonome</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="bg-orbs">
+        <div class="orb orb1"></div>
+        <div class="orb orb2"></div>
+        <div class="orb orb3"></div>
+    </div>
+
+    <div class="leaves">
+        <svg class="leaf leaf1" viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">
+            <path d="M40 10 Q70 40 60 80 Q50 110 40 115 Q30 110 20 80 Q10 40 40 10Z" fill="currentColor" />
+            <line x1="40" y1="10" x2="40" y2="115" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" />
+        </svg>
+        <svg class="leaf leaf2" viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">
+            <path d="M40 10 Q70 40 60 80 Q50 110 40 115 Q30 110 20 80 Q10 40 40 10Z" fill="currentColor" />
+            <line x1="40" y1="10" x2="40" y2="115" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" />
+        </svg>
+        <svg class="leaf leaf3" viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">
+            <path d="M40 10 Q70 40 60 80 Q50 110 40 115 Q30 110 20 80 Q10 40 40 10Z" fill="currentColor" />
+            <line x1="40" y1="10" x2="40" y2="115" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" />
+        </svg>
+        <svg class="leaf leaf4" viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">
+            <path d="M40 10 Q70 40 60 80 Q50 110 40 115 Q30 110 20 80 Q10 40 40 10Z" fill="currentColor" />
+            <line x1="40" y1="10" x2="40" y2="115" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" />
+        </svg>
+    </div>
+
+    <div class="container">
+        <h1>Serre Autonome </h1>
+
+        <section class="card card-temp">
+            <div class="card-label">Température</div>
+            <p class="valeur"><span id="temp">--</span><span class="unit">°C</span></p>
+            <p class="trappe-line">Trappe : <span id="trappeEtat" class="badge">--</span></p>
+        </section>
+
+        <section class="card card-humidity">
+            <div class="card-label">Humidité & Vannes</div>
+            <div class="zones">
+                <div class="capteur zone-fermee" id="zone1">
+                    <h3>Zone 1</h3>
+                    <p>Humidité : <span id="h1">--</span></p>
+                    <p>Vanne : <span id="v1">--</span></p>
+                </div>
+                <div class="capteur zone-fermee" id="zone2">
+                    <h3>Zone 2</h3>
+                    <p>Humidité : <span id="h2">--</span></p>
+                    <p>Vanne : <span id="v2">--</span></p>
+                </div>
+                <!--<div class="capteur zone-fermee" id="zone3">
+                <h3>Zone 3</h3>
+                <p>Humidité : <span id="h3">--</span></p>
+                <p>Vanne : <span id="v3">--</span></p>
+            </div>
+            <div class="capteur zone-fermee" id="zone4">
+                <h3>Zone 4</h3>
+                <p>Humidité : <span id="h4">--</span></p>
+                <p>Vanne : <span id="v4">--</span></p>
+            </div>-->
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
