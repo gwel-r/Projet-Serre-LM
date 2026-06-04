@@ -24,8 +24,6 @@ const float SEUIL_TEMP = 25.0;  // Ouvre trappe si temperature > 25 degres
 
 // ── Broches relais ───────────────────────────────────────────────
 const int RELAIS_VANNE[4] = {26, 27, 14, 12};
-const int RELAIS_TRAPPE1   = 13;
-const int RELAIS_TRAPPE2   = 11;
 
 // ── UUIDs BLE ────────────────────────────────────────────────────
 #define SERVICE_HUM  "11111111-1111-1111-1111-111111111111"
@@ -41,10 +39,9 @@ const char* NOMS_HUM[4] = {
   "ESP32_Hum_Z4"
 };
 
-const int motorPin3 = 9;
-const int motorPin4 = 10;
 int ouvrir = LOW; 
-
+const int motorPin3 = 18;
+const int motorPin4 = 19;
 // ── Donnees recues ───────────────────────────────────────────────
 float humidites[4] = {-1, -1, -1, -1};
 float temperature  = -1;
@@ -113,6 +110,7 @@ String lireBluetooth(const char* nom, const char* serviceUUID, const char* charU
 // ── Setup ────────────────────────────────────────────────────────
 void setup() {
   Serial.begin(115200);
+  delay(1000);
   // Verin
   pinMode(motorPin3, OUTPUT);
   pinMode(motorPin4, OUTPUT);
@@ -122,13 +120,9 @@ void setup() {
     pinMode(RELAIS_VANNE[i], OUTPUT);
     digitalWrite(RELAIS_VANNE[i], LOW);
   }
-  pinMode(RELAIS_TRAPPE1, OUTPUT);
-  digitalWrite(RELAIS_TRAPPE1, LOW);
-  pinMode(RELAIS_TRAPPE2, OUTPUT);
-  digitalWrite(RELAIS_TRAPPE2, LOW);
-
 
   // Bluetooth
+  btStop();
   BLEDevice::init("ESP32_Central");
 
   // WiFi
@@ -139,9 +133,7 @@ void setup() {
     Serial.print(".");
   }
   Serial.println("\nWiFi connecte - IP : " + WiFi.localIP().toString());
-  
-  /* NOUVEAU : demarrage de l'ecoute UDP sur le port 
-  local pour recevoir les reponses de l'ESP32 Pompe */           
+            
   udpPompe.begin(LOCAL_PORT);
   Serial.println("Ecoute UDP pompe sur port " + String(LOCAL_PORT));
 }
